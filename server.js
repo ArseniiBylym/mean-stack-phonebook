@@ -2,29 +2,25 @@ const path = require(`path`);
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const cors = require('cors');
 require('dotenv').config();
+const isAuth = require('./middlewares/isAuth');
 
 const app = express();
 
 // Middlevares
 app.use(helmet());
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(cors());
-// app.use((req, res, next) => {
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
-//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-//     next();
-// });
-
 
 // Main routes
-// app.use('/api/auth', require('./routes/auth'));
-// app.use('/api/contacts', require('./routes/contacts'));
-// app.use('/api/contact', require('./routes/contact'));
-// app.use('/api/history', require('./routes/history'));
+app.use('/api/auth', require('./routes/auth.route'));
+app.use('/api/contacts', isAuth, require('./routes/contacts.route'));
+app.use('/api/history', isAuth, require('./routes/history.route'));
 
 // Error handling
 app.use((error, req, res, next) => {

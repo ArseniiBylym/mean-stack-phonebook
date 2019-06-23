@@ -1,3 +1,40 @@
-<p>
-  login works!
-</p>
+<div class="c-wrapper d-flex flex-column justify-content-center">
+    <div class="row">
+        <div class="col-10 col-md-6 col-xl-4 offset-1 offset-md-3 offset-xl-4">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h4 class="card-title text-center text-danger">
+                        <img
+                            src="../../../assets/images/logo.png"
+                            width="30"
+                            height="30"
+                            class="d-inline-block align-top mr-2"
+                        />
+                        Phonebook
+                    </h4>
+                    <form>
+                        <div class="form-group">
+                            <label class="d-block"
+                                >Email
+                                <input type="email" class="form-control" />
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="d-block"
+                                >Password
+                                <input type="password" class="form-control" />
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary px-5 d-block mx-auto">Login</button>
+
+                        <p class="c-max-content text-primary text-center mt-2 mb-0 mx-auto">
+                            <a routerLink="/register">
+                                Have no account? Register
+                            </a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

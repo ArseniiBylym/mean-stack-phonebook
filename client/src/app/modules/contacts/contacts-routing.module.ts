@@ -6,9 +6,10 @@ import { ContactListComponent } from './contact-list/contact-list.component';
 import { ContactDetailsComponent } from './contact-details/contact-details.component';
 import { ContactCreateComponent } from './contact-create/contact-create.component';
 import { ContactEditComponent } from './contact-edit/contact-edit.component';
+import { AuthGuard } from './../../guards/auth.guard';
 
 const contactsRoutes: Routes = [
-    {path: 'contacts', component: ContactsComponent, children: [
+    {path: 'contacts', component: ContactsComponent, canActivate: [AuthGuard], children: [
         {path: '', component: ContactListComponent},
         {path: 'new', component: ContactCreateComponent},
         {path: ':id', component: ContactDetailsComponent},
@@ -18,7 +19,7 @@ const contactsRoutes: Routes = [
 
 @NgModule({
     imports: [
-        RouterModule.forChild(contactsRoutes),
+    RouterModule.forChild(contactsRoutes),
     ],
     exports: [RouterModule],
 })

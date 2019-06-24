@@ -7,15 +7,19 @@ import { User } from './../models/User.model';
 export class AuthService {
     constructor() {}
 
-    isAuth: boolean = false;
+    isLogedIn: boolean = true;
     user: null | User = null;
 
-    loginUser() {
-        this.isAuth = true;
+    login(): void {
+        this.isLogedIn = true;
     }
 
-    logoutUser() {
-        this.isAuth = false;
+    logout(): void {
+        this.isLogedIn = false;
         this.user = null;
+    }
+
+    isAuth(): boolean {
+        return this.isLogedIn;
     }
 }

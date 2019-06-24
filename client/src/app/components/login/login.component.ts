@@ -8,17 +8,20 @@ import {FormBuilder, Validators} from '@angular/forms';
     styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-    constructor(private auth: AuthService, private fb: FormBuilder) {}
+    constructor(
+        private authService: AuthService, 
+        private fb: FormBuilder
+    ) {}
 
     ngOnInit() {}
 
     loginForm = this.fb.group({
-        email: ['', [Validators.required, Validators.email]],
-        password: ['', Validators.required],
+        email: ['admin@gmail.com', [Validators.required, Validators.email]],
+        password: ['admin', Validators.required],
     });
 
     onSubmit() {
-        console.log(this.loginForm.value);
+        this.authService.login(this.loginForm.value)
     }
 
     getValidationErrorMessage(fieldName: string) {

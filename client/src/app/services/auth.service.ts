@@ -7,7 +7,7 @@ import { User } from './../models/User.model';
 export class AuthService {
     constructor() {}
 
-    isLogedIn: boolean = true;
+    isLogedIn: boolean = false;
     user: null | User = null;
 
     login(): void {

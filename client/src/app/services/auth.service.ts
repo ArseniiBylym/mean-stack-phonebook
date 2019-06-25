@@ -1,11 +1,13 @@
 import {Injectable} from '@angular/core';
+import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+
 import { User } from './../models/User.model';
 import { LoginData } from './../models/LoginData.model';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import axios from 'axios';
 import { environment } from 'src/environments/environment';
-import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { RegisterData } from './../models/RegisterData.model';
 
 
 @Injectable({
@@ -44,6 +46,10 @@ export class AuthService {
 
     login(data: LoginData) {
         return this.http.post<User>(`${environment.BASE_URL}/auth/login`, data, this.httpOptions)
+    }
+
+    register(data: RegisterData) {
+        return this.http.post<User>(`${environment.BASE_URL}/auth/register`, data, this.httpOptions)
     }
 
     logout() {

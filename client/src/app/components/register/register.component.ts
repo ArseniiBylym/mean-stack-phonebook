@@ -1,5 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, Validators, ValidatorFn, AbstractControl} from '@angular/forms';
+import {FormBuilder, Validators, ValidatorFn, AbstractControl, FormGroup, ValidationErrors} from '@angular/forms';
+import { Router } from '@angular/router';
+
+import { AuthService } from './../../services/auth.service';
+import { User } from './../../models/User.model';
+import { RegisterErrorResponse } from './../../models/RegisterErrorResponse.model';
 
 @Component({
     selector: 'app-register',
@@ -7,31 +12,62 @@ import {FormBuilder, Validators, ValidatorFn, AbstractControl} from '@angular/fo
     styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent implements OnInit {
-    constructor(private fb: FormBuilder) {}
+    constructor(
+        private fb: FormBuilder,
+        private authService: AuthService,
+        private router: Router,
+    ) {}
+
+    fetchingUser: boolean = false;
 
     ngOnInit() {}
-
-    passwordConfirmed(): ValidatorFn {
-        return (c: AbstractControl) : {[key: string]: boolean} | null => {
-            if (c.parent) {
-                if (c.parent.get('password').value !== c.parent.get('passwordConfirm').value) {
-                        return {'match': true}
-                    }
-                return null
-            }
-            return null;
+    
+    passwordConfirmed: ValidatorFn = (control: FormGroup) :ValidationErrors | null => {
+        const password = control.get('password');
+        const passwordConfirm = control.get('passwordConfirm');
+        if (password && passwordConfirm && password.value !== passwordConfirm.value) {
+            control.controls.passwordConfirm.setErrors({'match': true})
+            return {'match': true};
         }
+        control.controls.passwordConfirm.setErrors(null)
+        return null;
     }
 
     registerForm = this.fb.group({
         name: ['', Validators.required],
         email: ['', [Validators.required, Validators.email]],
         password: ['', Validators.required],
-        passwordConfirm: ['', [Validators.required, this.passwordConfirmed()]],
-    });
-
+        passwordConfirm: ['', Validators.required],
+    }, {validators: this.passwordConfirmed});
+    
     onSubmit() {
-        console.log(this.registerForm);
+        this.fetchingUser = true;
+        this.authService.register(this.registerForm.value)
+            .subscribe(
+                (user: User) => {
+                    console.log(user);
+                    this.authService.user = user;
+                    this.authService.isLogedIn = true;
+                    this.fetchingUser = false;
+                    this.router.navigate(['/contacts'])
+                },
+                error => {
+                    this.fetchingUser = false
+                    if (error.error) {
+                        this.setError(error.error)
+                    }
+                    console.log(error)
+                }
+            )
+    }
+
+    setError(errors: [RegisterErrorResponse]) {
+        errors.forEach(error => {
+            this.registerForm.controls[error.param].setErrors({'serverValidation': {
+                value: true, 
+                message: error.msg
+            }})
+        })
     }
 
     isInputValid(fieldName: string) {
@@ -44,6 +80,9 @@ export class RegisterComponent implements OnInit {
                 if (this.registerForm.controls[fieldName].errors.required) {
                     return 'Name is required';
                 }
+                if (this.registerForm.controls[fieldName].errors.serverValidation) {
+                    return this.registerForm.controls[fieldName].errors.serverValidation.message
+                }
                 break;
             case 'email':
                 if (this.registerForm.controls[fieldName].errors.required) {
@@ -52,20 +91,29 @@ export class RegisterComponent implements OnInit {
                 if (this.registerForm.controls[fieldName].errors.email) {
                     return 'Email should be a valid email address';
                 }
+                if (this.registerForm.controls[fieldName].errors.serverValidation) {
+                    return this.registerForm.controls[fieldName].errors.serverValidation.message
+                }
                 break;
             case 'password':
                 if (this.registerForm.controls[fieldName].errors.required) {
                     return 'Password is required';
                 }
+                if (this.registerForm.controls[fieldName].errors.serverValidation) {
+                    return this.registerForm.controls[fieldName].errors.serverValidation.message
+                }
                 break;
             case 'passwordConfirm':
-                    if (this.registerForm.controls[fieldName].errors.required) {
-                        return 'Password confirm is required';
-                    }
-                    if (this.registerForm.controls[fieldName].errors.match) {
-                        return 'Password does not matches';
-                    }
-                    break;
+                if (this.registerForm.controls[fieldName].errors.required) {
+                    return 'Password confirm is required';
+                }
+                if (this.registerForm.controls[fieldName].errors.match) {
+                    return 'Password does not matches';
+                }
+                if (this.registerForm.controls[fieldName].errors.serverValidation) {
+                    return this.registerForm.controls[fieldName].errors.serverValidation.message
+                }
+                break;
             default:
                 break;
         }

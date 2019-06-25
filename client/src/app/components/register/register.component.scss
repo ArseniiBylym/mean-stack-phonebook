@@ -2,9 +2,9 @@
     height: 100vh;
     overflow: hidden;
 }
-.c-border-error{
-    border-color: red;
 
+input.ng-invalid.ng-touched{
+    border-color: red;
     &:focus{
         box-shadow: 0 0 0 .2rem #ff000026;
     }

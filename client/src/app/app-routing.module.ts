@@ -5,20 +5,21 @@ import { HomeComponent } from './components/home/home.component';
 import {LoginComponent} from './components/login/login.component';
 import {RegisterComponent} from './components/register/register.component';
 import {PageNotFoundComponent} from './components/page-not-found/page-not-found.component';
-import { AlreadyLogedGuard } from './guards/already-loged.guard';
+import { LoginRegisterGuard } from './guards/login-register.guard';
+import { HomeGuard } from './guards/home.guard';
 
 const appRoutes: Routes = [
     // {path: '', redirectTo: '/contacts', pathMatch: 'full'},
-    {path: '', component: HomeComponent, canActivate: [AlreadyLogedGuard]},
-    {path: 'login', component: LoginComponent, canActivate: [AlreadyLogedGuard]},
-    {path: 'register', component: RegisterComponent, canActivate: [AlreadyLogedGuard]},
+    {path: '', component: HomeComponent, canActivate: [HomeGuard]},
+    {path: 'login', component: LoginComponent, canActivate: [LoginRegisterGuard]},
+    {path: 'register', component: RegisterComponent, canActivate: [LoginRegisterGuard]},
     {path: 'page-not-found', component: PageNotFoundComponent},
     {path: '**', redirectTo: 'page-not-found'},
 ];
 
 @NgModule({
     imports: [
-    RouterModule.forRoot(appRoutes)
+        RouterModule.forRoot(appRoutes)
     ],
     exports: [RouterModule],
 })

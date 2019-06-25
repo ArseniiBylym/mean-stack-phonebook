@@ -20,6 +20,7 @@ export class AuthService {
     ) {}
 
     isLogedIn: boolean = false;
+    fetchingUser: boolean = true;
     user: null | User = null;
     httpOptions = {
         headers: new HttpHeaders({
@@ -35,10 +36,12 @@ export class AuthService {
                     console.log(result);
                     this.user = result;
                     this.isLogedIn = true;
+                    this.fetchingUser = false;
                     this.router.navigate(['/contacts'])
                 },
                 error => {
                     console.log(error)
+                    this.fetchingUser = false;
                     this.router.navigate(['/login'])
                 },
             )

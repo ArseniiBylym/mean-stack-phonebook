@@ -6,7 +6,7 @@ import {AuthService} from './../services/auth.service';
 @Injectable({
     providedIn: 'root',
 })
-export class AlreadyLogedGuard implements CanActivate {
+export class LoginRegisterGuard implements CanActivate {
     constructor(private authService: AuthService, private router: Router) {}
 
     canActivate(
@@ -17,11 +17,16 @@ export class AlreadyLogedGuard implements CanActivate {
     }
 
     checkLogin():boolean {
-        if (!this.authService.isAuth()) {
-            return true
+        if (this.authService.isAuth()) {
+            this.router.navigate(['/contacts']);
+            return false;
+        } else {
+            if (this.authService.fetchingUser) {
+                this.router.navigate(['/'])
+                return false
+            } else {
+                return true
+            }
         }
-
-        this.router.navigate(['/contacts']);
-        return false;
     }
 }

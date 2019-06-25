@@ -5,6 +5,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import axios from 'axios';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 
 @Injectable({
@@ -42,18 +43,7 @@ export class AuthService {
     }
 
     login(data: LoginData) {
-        this.http.post<User>(`${environment.BASE_URL}/auth/login`, data, this.httpOptions)
-            .subscribe(
-                (result: User) => {
-                    console.log(result);
-                    this.user = result;
-                    this.isLogedIn = true;
-                    this.router.navigate(['/contacts'])
-                },
-                error => {
-                    console.log('Ups, something wrong', error)
-                },
-            )
+        return this.http.post<User>(`${environment.BASE_URL}/auth/login`, data, this.httpOptions)
     }
 
     logout() {

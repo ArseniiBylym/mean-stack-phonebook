@@ -23,11 +23,11 @@ exports.loginUser = async(req, res, next) => {
     try {
         const user = await User.findOne({email})
         if (!user) {
-            return res.status(400).json('Wrong email');
+            return res.status(400).json({validation: true, fieldName: 'email', errorMessage: 'Wrong email'});
         }
         const isPasswordMatches = await bcrypt.compare(password, user.password);
         if (!isPasswordMatches) {
-            return res.status(400).json('Wrong password');
+            return res.status(400).json({validation: true, fieldName: 'password', errorMessage: 'Wrong password'});
         }
         const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET_KEY, {expiresIn: process.env.JWT_EXPIRATION_TIME});
         res.cookie('token', `Bearer ${token}`, {httpOnly: true});

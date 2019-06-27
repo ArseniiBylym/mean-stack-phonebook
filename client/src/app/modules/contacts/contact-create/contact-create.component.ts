@@ -3,6 +3,8 @@ import {FormBuilder, Validators, AbstractControl, ValidationErrors} from '@angul
 import {AngularFireStorage} from '@angular/fire/storage';
 import { ContactCreateService } from './../../../services/contact-create.service';
 import { Router } from '@angular/router';
+import { ContactsService } from './../../../services/contacts.service';
+import { ContactItem } from './../../../models/ContactItem.model';
 
 @Component({
     selector: 'app-contact-create',
@@ -14,7 +16,8 @@ export class ContactCreateComponent implements OnInit {
         private fb: FormBuilder,
         private fireStorage: AngularFireStorage, 
         private contactCreateService: ContactCreateService,
-        private router: Router
+        private router: Router,
+        private contactService: ContactsService,
     ) {}
 
     sendingData: boolean = false;
@@ -72,9 +75,10 @@ export class ContactCreateComponent implements OnInit {
         }
         
         this.contactCreateService.create(contactData).subscribe(
-            result => {
+            (result: ContactItem) => {
                 console.log(result)
                 this.sendingData = false;
+                this.contactService.addContact(result);
                 this.router.navigate(['/contacts'])
             },
             error => {

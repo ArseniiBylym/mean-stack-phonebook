@@ -12,6 +12,7 @@ import { ContactCreateComponent } from './contact-create/contact-create.componen
 import { ContactEditComponent } from './contact-edit/contact-edit.component';
 import { ContactsRoutingModule } from './contacts-routing.module';
 import { ContactCreateService } from './../../services/contact-create.service';
+import { ContactsService } from './../../services/contacts.service';
 import { environment } from 'src/environments/environment';
 
 @NgModule({
@@ -23,7 +24,7 @@ import { environment } from 'src/environments/environment';
     ContactEditComponent
   ],
   imports: [
-    CommonModule,
+  CommonModule,
     HttpClientModule,
     ReactiveFormsModule,
     ContactsRoutingModule,
@@ -33,6 +34,7 @@ import { environment } from 'src/environments/environment';
   providers: [
     { provide: StorageBucket, useValue: 'ng-phonebook-58f04.appspot.com' },
     ContactCreateService,
+    ContactsService,
   ],
 })
 export class ContactsModule { }

@@ -7,7 +7,13 @@ exports.getContacts = async(req, res, next) => {
     const {_id} = req.user;
     const {limit, sortOrder} = req.query;
     try {
-        const user = await User.findById(_id).populate('contacts', 'name avatar _id').exec();
+        const user = await User.findById(_id).populate({
+            path: 'contacts',
+            select: '_id name phone avatar',
+            options: {
+                sort: {name: 'asc'}
+            }
+        }).exec();
         if (!user) {
             return res.status(400).json('User not found');
         }

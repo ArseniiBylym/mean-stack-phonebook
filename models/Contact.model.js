@@ -5,12 +5,12 @@ const contactSchema = new Schema({
     phone: {type: String, required: true},
     email: String,
     company: String,
-    avatar: {type:String, default: '/static/images/avatar.png'}
+    avatar: {type:String, default: '/assets/images/avatar.png'}
 })
 
 contactSchema.methods.short = function() {
-    const {_id, name, avatar} = this.toJSON();
-    return {_id, name, avatar};
+    const {_id, name, phone, avatar} = this.toJSON();
+    return {_id, name, phone, avatar};
 }
 
 module.exports = model('contact', contactSchema);

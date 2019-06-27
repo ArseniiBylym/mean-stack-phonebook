@@ -9,6 +9,7 @@ import { environment } from 'src/environments/environment';
 export class ContactsService {
     public contacts: ContactItem[] | null = null;
     contactsUpdates = new Subject<ContactItem[]>();
+    contactItemUpdate = new Subject<ContactItem>();
 
     constructor(private http: HttpClient) {}
 
@@ -34,6 +35,10 @@ export class ContactsService {
                 console.log(error)
             }
         )
+    }
+
+    getContactDetails(id: number | string) {
+        return this.http.get(`${environment.BASE_URL}/contacts/${id}`, this.getOptions())
     }
 
     addContact(contact: ContactItem) {

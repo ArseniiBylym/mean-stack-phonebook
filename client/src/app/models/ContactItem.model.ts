@@ -3,4 +3,6 @@ export interface ContactItem {
     name: string,
     phone: string,
     avatar?: string,
+    email?: string,
+    company?: string,
 }

@@ -4,7 +4,16 @@
 
 export const environment = {
   production: false,
-  BASE_URL: 'http://localhost:5000/api'
+  BASE_URL: 'http://localhost:5000/api',
+  firebase: {
+    apiKey: "AIzaSyCuSRroU3vGqVS0PjAdkr67aheIQMmptB8",
+    authDomain: "ng-phonebook-58f04.firebaseapp.com",
+    databaseURL: "https://ng-phonebook-58f04.firebaseio.com",
+    projectId: "ng-phonebook-58f04",
+    storageBucket: "",
+    messagingSenderId: "870796540855",
+    appId: "1:870796540855:web:591e3635f2ffddc4"
+  }
 };
 
 /*

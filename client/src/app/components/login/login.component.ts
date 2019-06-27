@@ -31,14 +31,16 @@ export class LoginComponent implements OnInit {
         this.fetchingUser = true;
         this.authService.login(this.loginForm.value)
             .subscribe(
-                (result: User) => {
+                (result: {token: string, user: User}) => {
                     console.log(result);
-                    this.authService.user = result;
+                    this.authService.user = result.user;
                     this.authService.isLogedIn = true;
                     this.fetchingUser = false;
+                    localStorage.setItem('token', result.token);
                     this.router.navigate(['/contacts'])
                 },
                 error => {
+                    console.log(error)
                     this.fetchingUser = false;
                     if (error.error.validation) {
                         this.setError(error.error)

@@ -44,11 +44,11 @@ export class RegisterComponent implements OnInit {
         this.fetchingUser = true;
         this.authService.register(this.registerForm.value)
             .subscribe(
-                (user: User) => {
-                    console.log(user);
-                    this.authService.user = user;
+                (response: {token: string, user: User}) => {
+                    this.authService.user = response.user;
                     this.authService.isLogedIn = true;
                     this.fetchingUser = false;
+                    localStorage.setItem('token', response.token)
                     this.router.navigate(['/contacts'])
                 },
                 error => {

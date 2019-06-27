@@ -1,8 +1,8 @@
 <div class="c-wrapper">
-    <div class="row m-0">
+    <div class="c-header row m-0">
         <div class="col-12 p-0">
             <nav class="navbar navbar-light bg-primary">
-                <a class="navbar-brand" href="#">
+                <a class="navbar-brand" routerLink="/contacts">
                     <div class="d-inline text-danger align-center bg-white rounded-circle mr-2">
                         <img
                             src="../../../assets/icons/phone.svg"
@@ -26,9 +26,10 @@
             </nav>
         </div>
     </div>
-    <div class="row m-0">
-        <div class="col-12 p-0">
+    <div class="c-content">
+        <!-- <div class="col-12 p-0"> -->
             <router-outlet></router-outlet>
-        </div>
+        <!-- </div> -->
     </div>
+    
 </div>

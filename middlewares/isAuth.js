@@ -2,10 +2,13 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const isAuth = (req, res, next) => {
-    const token = req.cookies.token ? req.cookies.token.split(' ')[1] : null;
-    if (!token) {
-        return res.status(401).json('User not authorized');
+    let token = req.header('Authorization');
+    if (token) {
+        token = token.split(' ')[1];
+    } else {
+        return res.status(401).json('User is not authorized');
     }
+    
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
         req.user = decodedToken;

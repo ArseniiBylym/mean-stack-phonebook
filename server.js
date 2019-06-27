@@ -9,6 +9,9 @@ require('dotenv').config();
 const isAuth = require('./middlewares/isAuth');
 
 const app = express();
+const authRouter = require('./routes/auth.route');
+const contactsRouter = require('./routes/contacts.route');
+const historyRouter = require('./routes/history.route');
 
 // Middlevares
 app.use(helmet());
@@ -17,17 +20,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json({limit: '50mb'}));
 // app.use(cors());
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URI);
-    res.setHeader('Access-Control-Allow-Credentials', true)
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
-    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
     next();
 });
 
 // Main routes
-app.use('/api/auth', require('./routes/auth.route'));
-app.use('/api/contacts', isAuth, require('./routes/contacts.route'));
-app.use('/api/history', isAuth, require('./routes/history.route'));
+app.use('/api/auth', authRouter);
+app.use('/api/contacts', contactsRouter);
+app.use('/api/history', historyRouter);
 
 // Error handling
 app.use((error, req, res, next) => {

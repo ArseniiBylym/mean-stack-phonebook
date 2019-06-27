@@ -32,7 +32,7 @@ exports.loginUser = async(req, res, next) => {
         const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET_KEY, {expiresIn: process.env.JWT_EXPIRATION_TIME});
         res.cookie('token', `Bearer ${token}`, {httpOnly: true});
         delete user.password;
-        return res.status(200).json(user.toWeb());
+        return res.status(200).json({token, user: user.toWeb()});
     } catch (error) {
         next(error)
     }
@@ -49,13 +49,13 @@ exports.registerUser = async(req, res, next) => {
         const user = await new User({name, email, password: encryptedPassword}).save();
         const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET_KEY, {expiresIn: process.env.JWT_EXPIRATION_TIME});
         res.cookie('token', `Bearer ${token}`, {httpOnly: true});
-        res.status(201).json(user.toWeb());
+        return res.status(200).json({token, user: user.toWeb()});
     } catch (error) {
         next(error);
     }
 };
 
-exports.logoutUser = (req, res) => {
-    res.clearCookie('token');
-    res.status(200).json('You successfully loged out');
-}
+// exports.logoutUser = (req, res) => {
+//     res.clearCookie('token');
+//     res.status(200).json('You successfully loged out');
+// }

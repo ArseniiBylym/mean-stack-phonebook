@@ -1,6 +1,6 @@
 <div class="c-search-input px-3">
     <div class="c-search-input-content form-group text-center">
-        <input type="text" class="form-control mt-2" placeholder="Search" [(ngModel)]="searchString" name="searchString" (input)="onSearchChange()"/>
+        <input type="text" class="form-control mt-2" placeholder="Search" [(ngModel)]="searchString" name="searchString" (input)="onSearchChange()" [disabled]="!contacts || !contacts.length"/>
     </div>
 </div>
 <div class="c-wrapper p-3">

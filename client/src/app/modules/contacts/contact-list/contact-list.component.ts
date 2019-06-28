@@ -27,6 +27,7 @@ export class ContactListComponent implements OnInit {
     }
 
     onSearchChange() {
+        if (!this.contacts) return;
         this.filteredContacts = this.searchFilter(this.contacts);
     }
     

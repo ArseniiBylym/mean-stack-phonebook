@@ -1,6 +1,12 @@
+<div class="c-search-input px-3">
+    <div class="c-search-input-content form-group text-center">
+        <input type="text" class="form-control mt-2" placeholder="Search" [(ngModel)]="searchString" name="searchString" (input)="onSearchChange()"/>
+    </div>
+</div>
 <div class="c-wrapper p-3">
     <h4 *ngIf="!contacts || contacts.length === 0" class="text-center mt-2" #emptyHeader>Contact list is empty now</h4>
-    <div *ngFor="let contact of contacts" class="card mb-3 mx-auto bg-light" style="max-width: 600px;">
+    <h4 *ngIf="searchString.length !== 0 && filteredContacts.length === 0" class="text-center mt-2" #emptyHeader>Contacts not found</h4>
+    <div *ngFor="let contact of filteredContacts" class="card mb-3 mx-auto bg-light" style="max-width: 600px;">
         <a class="c-contact-card" [routerLink]="['/contacts', contact._id]">
             <div class="row no-gutters">
                 <div class="col-4">

@@ -7,11 +7,13 @@ import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class ContactsService {
+    constructor(private http: HttpClient) {}
+
     public contacts: ContactItem[] | null = null;
     contactsUpdates = new Subject<ContactItem[]>();
     contactItemUpdate = new Subject<ContactItem>();
+    public selectedContact: ContactItem | null = null;
 
-    constructor(private http: HttpClient) {}
 
     getOptions() {
         return {
@@ -35,6 +37,10 @@ export class ContactsService {
                 console.log(error)
             }
         )
+    }
+
+    updataContactOnServer(contact: ContactItem) {
+        return this.http.put(`${environment.BASE_URL}/contacts/${this.selectedContact._id}`, contact, this.getOptions())
     }
 
     getContactDetails(id: number | string) {

@@ -30,6 +30,7 @@ export class ContactDetailsComponent implements OnInit {
                                 console.log(data)
                                 this.contact = data;
                                 this.fetching = false;
+                                this.contactsServise.selectedContact = data;
                             },
                             error => {
                                 console.log(error);

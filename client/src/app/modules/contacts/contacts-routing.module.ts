@@ -6,7 +6,7 @@ import { ContactListComponent } from './contact-list/contact-list.component';
 import { ContactDetailsComponent } from './contact-details/contact-details.component';
 import { ContactCreateComponent } from './contact-create/contact-create.component';
 import { ContactEditComponent } from './contact-edit/contact-edit.component';
-import { AuthGuard } from './../../guards/auth.guard';
+import { AuthGuard } from '../../shared/guards/auth.guard';
 
 const contactsRoutes: Routes = [
     {path: 'contacts', component: ContactsComponent, canActivate: [AuthGuard], children: [
@@ -15,7 +15,7 @@ const contactsRoutes: Routes = [
         {path: ':id', component: ContactDetailsComponent},
         {path: ':id/edit', component: ContactEditComponent},
     ]}
-]
+];
 
 @NgModule({
     imports: [

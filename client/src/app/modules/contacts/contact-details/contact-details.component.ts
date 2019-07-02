@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {ContactsService} from './../../../services/contacts.service';
-import {ContactItem} from 'src/app/models/ContactItem.model';
-import { Subscription } from 'rxjs';
-import { ActivatedRoute, Router, Params } from '@angular/router';
+import {ContactsService} from '../../../core/services/contacts.service';
+import {ContactItem} from 'src/app/core/models/ContactItem.model';
+import {ActivatedRoute, Router, Params} from '@angular/router';
 
 @Component({
     selector: 'app-contact-details',
@@ -11,37 +10,29 @@ import { ActivatedRoute, Router, Params } from '@angular/router';
 })
 export class ContactDetailsComponent implements OnInit {
     contact: ContactItem;
-    fetching: boolean = true;
+    fetching = true;
 
-    constructor(
-        private contactsServise: ContactsService,
-        private route: ActivatedRoute,
-        private router: Router
-    ) {}
+    constructor(private contactsServise: ContactsService, private route: ActivatedRoute, private router: Router) {}
 
     ngOnInit() {
-        this.route.params   
-            .subscribe(
-                (params: Params) => {
-                    console.log(params)
-                    this.contactsServise.getContactDetails(params.id)
-                        .subscribe(
-                            (data: ContactItem) => {
-                                console.log(data)
-                                this.contact = data;
-                                this.fetching = false;
-                                this.contactsServise.selectedContact = data;
-                            },
-                            error => {
-                                console.log(error);
-                                this.fetching = false;
-                            }
-                        );
-                }
-            )
+        this.route.params.subscribe((params: Params) => {
+            console.log(params);
+            this.contactsServise.getContactDetails(params.id).subscribe(
+                (data: ContactItem) => {
+                    console.log(data);
+                    this.contact = data;
+                    this.fetching = false;
+                    this.contactsServise.selectedContact = data;
+                },
+                error => {
+                    console.log(error);
+                    this.fetching = false;
+                },
+            );
+        });
     }
 
     onCall() {
-        console.log(this.contact._id)
+        console.log(this.contact._id);
     }
 }

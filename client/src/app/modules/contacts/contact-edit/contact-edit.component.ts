@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {ContactsService} from './../../../services/contacts.service';
-import {ContactItem} from 'src/app/models/ContactItem.model';
+import {ContactsService} from '../../../core/services/contacts.service';
+import {ContactItem} from 'src/app/core/models/ContactItem.model';
 import {FormBuilder, Validators, AbstractControl, ValidationErrors} from '@angular/forms';
 import {AngularFireStorage} from '@angular/fire/storage';
 import {Router} from '@angular/router';
@@ -18,16 +18,8 @@ export class ContactEditComponent implements OnInit {
         private contactsService: ContactsService,
     ) {}
 
-    customEmailValidator(control: AbstractControl): ValidationErrors {
-        if (!control.value) {
-            return null;
-        }
-        const isValid = /\S+@\S+\.\S+/.test(control.value);
-        return isValid ? null : {'email': true};
-    }
-
     contact: ContactItem;
-    updatingData: boolean = false;
+    updatingData = false;
     avatarImage: string | ArrayBuffer | null = null;
     imageFile: any = null;
     fileRef: any = null;
@@ -39,6 +31,14 @@ export class ContactEditComponent implements OnInit {
         company: [null],
     });
 
+    customEmailValidator(control: AbstractControl): ValidationErrors {
+        if (!control.value) {
+            return null;
+        }
+        const isValid = /\S+@\S+\.\S+/.test(control.value);
+        return isValid ? null : {email: true};
+    }
+
     ngOnInit() {
         this.contact = this.contactsService.selectedContact;
         this.contactForm.patchValue({
@@ -47,14 +47,14 @@ export class ContactEditComponent implements OnInit {
             phone: this.contact.phone,
             email: this.contact.email || null,
             company: this.contact.company || null,
-        })
+        });
         this.avatarImage = this.contact.avatar;
     }
 
     onSubmit() {
         this.updatingData = true;
         if (this.imageFile) {
-            this.uploadAvatarToFirebase()
+            this.uploadAvatarToFirebase();
         } else {
             this.sendToServer();
         }
@@ -66,36 +66,43 @@ export class ContactEditComponent implements OnInit {
         const name = this.contactForm.get('name').value;
         const filePath = `/avatars/${name}_${phone}`;
         this.fileRef = this.fireStorage.ref(filePath);
-        this.fileRef.put(file).then(snapshot => {
-            return snapshot.ref.getDownloadURL();
-        }).then(url => {
-            this.sendToServer(url)
-        })
+        this.fileRef
+            .put(file)
+            .then(snapshot => {
+                return snapshot.ref.getDownloadURL();
+            })
+            .then(url => {
+                this.sendToServer(url);
+            });
     }
 
     onShowData() {
-        console.log(this.contactForm)
+        console.log(this.contactForm);
     }
 
-    sendToServer(avatarUrl?: string){
-        let contactData = Object.assign({}, this.contactForm.value);
-        if (!contactData.email) delete contactData.email;
-        if (!contactData.company) delete contactData.company;
+    sendToServer(avatarUrl?: string) {
+        const contactData = Object.assign({}, this.contactForm.value);
+        if (!contactData.email) {
+            delete contactData.email;
+        }
+        if (!contactData.company) {
+            delete contactData.company;
+        }
         if (avatarUrl) {
             contactData.avatar = avatarUrl;
         }
-        
+
         this.contactsService.updataContactOnServer(contactData).subscribe(
             (result: ContactItem) => {
-                console.log(result)
+                console.log(result);
                 this.updatingData = false;
                 this.contactsService.updateContact(result);
-                this.router.navigate(['/contacts', this.contact._id])
+                this.router.navigate(['/contacts', this.contact._id]);
             },
             error => {
                 this.updatingData = false;
                 this.serverErrorHandler(error);
-            }
+            },
         );
     }
 
@@ -103,16 +110,18 @@ export class ContactEditComponent implements OnInit {
         console.log(serverError);
         if (serverError.error) {
             serverError.error.forEach(error => {
-                this.contactForm.controls[error.param].setErrors({'serverValidation': {
-                    value: true, 
-                    message: error.msg
-                }})
-            })
+                this.contactForm.controls[error.param].setErrors({
+                    serverValidation: {
+                        value: true,
+                        message: error.msg,
+                    },
+                });
+            });
         }
     }
 
     onFileChange(event) {
-        const reader = new FileReader;
+        const reader = new FileReader();
         if (event.target.files && event.target.files.length) {
             const [file] = event.target.files;
             reader.readAsDataURL(file);
@@ -120,7 +129,7 @@ export class ContactEditComponent implements OnInit {
             reader.onload = () => {
                 this.avatarImage = reader.result;
                 this.imageFile = file;
-            }
+            };
         }
     }
 
@@ -135,7 +144,7 @@ export class ContactEditComponent implements OnInit {
                     return 'Name is required';
                 }
                 if (this.contactForm.controls[fieldName].errors.serverValidation) {
-                    return this.contactForm.controls[fieldName].errors.serverValidation.message
+                    return this.contactForm.controls[fieldName].errors.serverValidation.message;
                 }
                 break;
             }
@@ -144,10 +153,10 @@ export class ContactEditComponent implements OnInit {
                     return 'Email is required';
                 }
                 if (this.contactForm.controls[fieldName].errors.email) {
-                    return 'Email should be a valid email address'
+                    return 'Email should be a valid email address';
                 }
                 if (this.contactForm.controls[fieldName].errors.serverValidation) {
-                    return this.contactForm.controls[fieldName].errors.serverValidation.message
+                    return this.contactForm.controls[fieldName].errors.serverValidation.message;
                 }
                 break;
             case 'phone':
@@ -158,12 +167,11 @@ export class ContactEditComponent implements OnInit {
                     return 'Phone should be a valid phone number';
                 }
                 if (this.contactForm.controls[fieldName].errors.serverValidation) {
-                    return this.contactForm.controls[fieldName].errors.serverValidation.message
+                    return this.contactForm.controls[fieldName].errors.serverValidation.message;
                 }
                 break;
             default:
                 break;
         }
     }
-
 }

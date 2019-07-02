@@ -11,8 +11,6 @@ import {ContactDetailsComponent} from './contact-details/contact-details.compone
 import {ContactCreateComponent} from './contact-create/contact-create.component';
 import {ContactEditComponent} from './contact-edit/contact-edit.component';
 import {ContactsRoutingModule} from './contacts-routing.module';
-import {ContactCreateService} from './../../services/contact-create.service';
-import {ContactsService} from './../../services/contacts.service';
 import {environment} from 'src/environments/environment';
 
 @NgModule({
@@ -33,9 +31,7 @@ import {environment} from 'src/environments/environment';
         AngularFireStorageModule,
     ],
     providers: [
-        {provide: StorageBucket, useValue: 'ng-phonebook-58f04.appspot.com'},
-        ContactCreateService,
-        ContactsService,
+        {provide: StorageBucket, useValue: environment.storageBucket},
     ],
 })
 export class ContactsModule {}

@@ -4,24 +4,21 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 
 import {AppComponent} from './app.component';
-import {LoginComponent} from './components/login/login.component';
-import {RegisterComponent} from './components/register/register.component';
 import {AppRoutingModule} from './app-routing.module';
+import { CoreModule } from './core/core.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { ContactsModule } from './modules/contacts/contacts.module';
-import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
-import { HomeComponent } from './components/home/home.component';
 
 @NgModule({
     declarations: [
         AppComponent,
-        LoginComponent, 
-        RegisterComponent, 
-        PageNotFoundComponent, HomeComponent
     ],
     imports: [
-        BrowserModule, 
+        BrowserModule,
         HttpClientModule,
         ReactiveFormsModule,
+        CoreModule,
+        AuthModule,
         ContactsModule,
         AppRoutingModule,
     ],

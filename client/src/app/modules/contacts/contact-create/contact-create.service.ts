@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {CreateContactData} from '../models/CreateContactData.model';
+import {CreateContactData} from '../../../core/models/CreateContactData.model';
 import {HttpHeaders, HttpClient} from '@angular/common/http';
 import {environment} from 'src/environments/environment';
 

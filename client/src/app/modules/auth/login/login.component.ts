@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {AuthService} from './../../services/auth.service';
+import {AuthService} from '../../../core/services/auth.service';
 import {FormBuilder, Validators} from '@angular/forms';
-import {User} from '../../models/User.model'
-import { LoginErrorResponse } from './../../models/LoginErrorResponse.model';
+import {User} from '../../../core/models/User.model'
+import { LoginErrorResponse } from '../../../core/models/LoginErrorResponse.model';
 import { Router } from '@angular/router';
 
 @Component({
@@ -13,20 +13,18 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
 
     constructor(
-        private authService: AuthService, 
+        private authService: AuthService,
         private fb: FormBuilder,
         private router: Router,
     ) {}
 
-    fetchingUser: boolean = false;
-
-    ngOnInit() {}
-
+    fetchingUser = false;
     loginForm = this.fb.group({
         email: ['', [Validators.required, Validators.email]],
         password: ['', Validators.required],
     });
 
+    ngOnInit() {}
     onSubmit() {
         this.fetchingUser = true;
         this.authService.login(this.loginForm.value)
@@ -40,21 +38,21 @@ export class LoginComponent implements OnInit {
                     this.router.navigate(['/contacts'])
                 },
                 error => {
-                    console.log(error)
+                    console.log(error);
                     this.fetchingUser = false;
                     if (error.error.validation) {
-                        this.setError(error.error)
+                        this.setError(error.error);
                     }
-                    console.log('Ups, something went wrong', error)
+                    console.log('Ups, something went wrong', error);
                 },
-            )
+            );
     }
 
     setError(error: LoginErrorResponse) {
-        this.loginForm.controls[error.fieldName].setErrors({'serverValidation': {
-            value: true, 
+        this.loginForm.controls[error.fieldName].setErrors({serverValidation: {
+            value: true,
             message: error.errorMessage
-        }})
+        }});
     }
 
     getValidationErrorMessage(fieldName: string) {
@@ -67,7 +65,7 @@ export class LoginComponent implements OnInit {
                     return 'Email should be a valid email address'
                 }
                 if (this.loginForm.controls[fieldName].errors.serverValidation) {
-                    return this.loginForm.controls[fieldName].errors.serverValidation.message
+                    return this.loginForm.controls[fieldName].errors.serverValidation.message;
                 }
                 break;
             case 'password':
@@ -75,7 +73,7 @@ export class LoginComponent implements OnInit {
                     return 'Password is required';
                 }
                 if (this.loginForm.controls[fieldName].errors.serverValidation) {
-                    return this.loginForm.controls[fieldName].errors.serverValidation.message
+                    return this.loginForm.controls[fieldName].errors.serverValidation.message;
                 }
                 break;
             default:

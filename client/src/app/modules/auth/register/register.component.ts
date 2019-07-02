@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, Validators, ValidatorFn, AbstractControl, FormGroup, ValidationErrors} from '@angular/forms';
-import { Router } from '@angular/router';
+import {FormBuilder, Validators, FormGroup, ValidationErrors} from '@angular/forms';
+import {Router} from '@angular/router';
 
-import { AuthService } from './../../services/auth.service';
-import { User } from './../../models/User.model';
-import { RegisterErrorResponse } from './../../models/RegisterErrorResponse.model';
+import {AuthService} from '../../../core/services/auth.service';
+import {User} from '../../../core/models/User.model';
+import {RegisterErrorResponse} from '../../../core/models/RegisterErrorResponse.model';
 
 @Component({
     selector: 'app-register',
@@ -12,62 +12,61 @@ import { RegisterErrorResponse } from './../../models/RegisterErrorResponse.mode
     styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent implements OnInit {
-    constructor(
-        private fb: FormBuilder,
-        private authService: AuthService,
-        private router: Router,
-    ) {}
+    constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {}
 
-    fetchingUser: boolean = false;
+    fetchingUser = false;
+    registerForm = this.fb.group(
+        {
+            name: ['', Validators.required],
+            email: ['', [Validators.required, Validators.email]],
+            password: ['', Validators.required],
+            passwordConfirm: ['', Validators.required],
+        },
+        {validators: this.passwordConfirmed},
+    );
 
     ngOnInit() {}
-    
-    passwordConfirmed: ValidatorFn = (control: FormGroup) :ValidationErrors | null => {
+
+    passwordConfirmed(control: FormGroup): ValidationErrors | null {
         const password = control.get('password');
         const passwordConfirm = control.get('passwordConfirm');
         if (password && passwordConfirm && password.value !== passwordConfirm.value) {
-            control.controls.passwordConfirm.setErrors({'match': true})
-            return {'match': true};
+            control.controls.passwordConfirm.setErrors({match: true});
+            return {match: true};
         }
-        control.controls.passwordConfirm.setErrors(null)
+        control.controls.passwordConfirm.setErrors(null);
         return null;
     }
 
-    registerForm = this.fb.group({
-        name: ['', Validators.required],
-        email: ['', [Validators.required, Validators.email]],
-        password: ['', Validators.required],
-        passwordConfirm: ['', Validators.required],
-    }, {validators: this.passwordConfirmed});
-    
     onSubmit() {
         this.fetchingUser = true;
-        this.authService.register(this.registerForm.value)
-            .subscribe(
-                (response: {token: string, user: User}) => {
-                    this.authService.user = response.user;
-                    this.authService.isLogedIn = true;
-                    this.fetchingUser = false;
-                    localStorage.setItem('token', response.token)
-                    this.router.navigate(['/contacts'])
-                },
-                error => {
-                    this.fetchingUser = false
-                    if (error.error) {
-                        this.setError(error.error)
-                    }
-                    console.log(error)
+        this.authService.register(this.registerForm.value).subscribe(
+            (response: {token: string; user: User}) => {
+                this.authService.user = response.user;
+                this.authService.isLogedIn = true;
+                this.fetchingUser = false;
+                localStorage.setItem('token', response.token);
+                this.router.navigate(['/contacts']);
+            },
+            error => {
+                this.fetchingUser = false;
+                if (error.error) {
+                    this.setError(error.error);
                 }
-            )
+                console.log(error);
+            },
+        );
     }
 
     setError(errors: [RegisterErrorResponse]) {
         errors.forEach(error => {
-            this.registerForm.controls[error.param].setErrors({'serverValidation': {
-                value: true, 
-                message: error.msg
-            }})
-        })
+            this.registerForm.controls[error.param].setErrors({
+                serverValidation: {
+                    value: true,
+                    message: error.msg,
+                },
+            });
+        });
     }
 
     isInputValid(fieldName: string) {
@@ -81,7 +80,7 @@ export class RegisterComponent implements OnInit {
                     return 'Name is required';
                 }
                 if (this.registerForm.controls[fieldName].errors.serverValidation) {
-                    return this.registerForm.controls[fieldName].errors.serverValidation.message
+                    return this.registerForm.controls[fieldName].errors.serverValidation.message;
                 }
                 break;
             case 'email':
@@ -92,7 +91,7 @@ export class RegisterComponent implements OnInit {
                     return 'Email should be a valid email address';
                 }
                 if (this.registerForm.controls[fieldName].errors.serverValidation) {
-                    return this.registerForm.controls[fieldName].errors.serverValidation.message
+                    return this.registerForm.controls[fieldName].errors.serverValidation.message;
                 }
                 break;
             case 'password':
@@ -100,7 +99,7 @@ export class RegisterComponent implements OnInit {
                     return 'Password is required';
                 }
                 if (this.registerForm.controls[fieldName].errors.serverValidation) {
-                    return this.registerForm.controls[fieldName].errors.serverValidation.message
+                    return this.registerForm.controls[fieldName].errors.serverValidation.message;
                 }
                 break;
             case 'passwordConfirm':
@@ -111,7 +110,7 @@ export class RegisterComponent implements OnInit {
                     return 'Password does not matches';
                 }
                 if (this.registerForm.controls[fieldName].errors.serverValidation) {
-                    return this.registerForm.controls[fieldName].errors.serverValidation.message
+                    return this.registerForm.controls[fieldName].errors.serverValidation.message;
                 }
                 break;
             default:

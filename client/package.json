@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve -o",
     "build": "ng build",
     "build:prod": "ng build --aot=true --prod=true --statsJson=true",
     "analyze": "webpack-bundle-analyzer dist/client/stats-es5.json",

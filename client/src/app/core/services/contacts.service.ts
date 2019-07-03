@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Subject} from 'rxjs';
 
-import {ContactItem} from '../models/ContactItem.model';
+import {ContactItem} from '../models';
 import {environment} from 'src/environments/environment';
 
 @Injectable({

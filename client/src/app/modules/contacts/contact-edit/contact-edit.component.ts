@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {ContactsService} from '../../../core/services/contacts.service';
-import {ContactItem} from 'src/app/core/models/ContactItem.model';
+import {ContactsService} from '../../../core/services';
+import {ContactItem} from 'src/app/core/models';
 import {FormBuilder, Validators, AbstractControl, ValidationErrors} from '@angular/forms';
 import {AngularFireStorage} from '@angular/fire/storage';
 import {Router} from '@angular/router';

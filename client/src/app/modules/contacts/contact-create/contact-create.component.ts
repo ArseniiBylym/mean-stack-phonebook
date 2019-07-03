@@ -3,8 +3,8 @@ import {FormBuilder, Validators, AbstractControl, ValidationErrors} from '@angul
 import {AngularFireStorage} from '@angular/fire/storage';
 import {ContactCreateService} from './contact-create.service';
 import {Router} from '@angular/router';
-import {ContactsService} from '../../../core/services/contacts.service';
-import {ContactItem} from '../../../core/models/ContactItem.model';
+import {ContactsService} from '../../../core/services';
+import {ContactItem} from '../../../core/models';
 
 @Component({
     selector: 'app-contact-create',

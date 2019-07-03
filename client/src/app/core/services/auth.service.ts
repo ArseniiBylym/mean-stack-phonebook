@@ -2,9 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Router} from '@angular/router';
 
-import {User} from '../models/User.model';
-import {LoginData} from '../models/LoginData.model';
-import {RegisterData} from '../models/RegisterData.model';
+import {User, LoginData, RegisterData} from '../models';
 import {environment} from 'src/environments/environment';
 
 @Injectable({

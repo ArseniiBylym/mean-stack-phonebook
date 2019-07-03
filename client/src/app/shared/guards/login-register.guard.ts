@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router} from '@angular/router';
 import {Observable} from 'rxjs';
-import {AuthService} from '../../core/services/auth.service';
+import {AuthService} from '../../core/services';
 
 @Injectable({
     providedIn: 'root',
@@ -16,16 +16,16 @@ export class LoginRegisterGuard implements CanActivate {
         return this.checkLogin()
     }
 
-    checkLogin():boolean {
+    checkLogin(): boolean {
         if (this.authService.isAuth()) {
             this.router.navigate(['/contacts']);
             return false;
         } else {
             if (this.authService.fetchingUser) {
-                this.router.navigate(['/'])
-                return false
+                this.router.navigate(['/']);
+                return false;
             } else {
-                return true
+                return true;
             }
         }
     }

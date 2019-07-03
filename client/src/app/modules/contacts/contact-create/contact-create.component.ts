@@ -1,10 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {FormBuilder, Validators, AbstractControl, ValidationErrors} from '@angular/forms';
-import {AngularFireStorage} from '@angular/fire/storage';
+import {ContactsService} from '../contacts.service';
 import {ContactCreateService} from './contact-create.service';
-import {Router} from '@angular/router';
-import {ContactsService} from '../../../core/services';
-import {ContactItem} from '../../../core/models';
+import {Subscription} from 'rxjs';
+import {filter, tap} from 'rxjs/operators';
+import { RegisterErrorResponse } from 'src/app/core/models';
 
 @Component({
     selector: 'app-contact-create',
@@ -12,18 +12,18 @@ import {ContactItem} from '../../../core/models';
     styleUrls: ['./contact-create.component.scss'],
     providers: [ContactCreateService],
 })
-export class ContactCreateComponent implements OnInit {
+export class ContactCreateComponent implements OnInit, OnDestroy {
     constructor(
         private fb: FormBuilder,
-        private fireStorage: AngularFireStorage,
+        private contactsService: ContactsService,
         private contactCreateService: ContactCreateService,
-        private router: Router,
-        private contactService: ContactsService,
     ) {}
 
-    sendingData = false;
+    loading: boolean;
+    loadingSub$: Subscription;
+    errorsSub$: Subscription;
+
     avatarImage: string | ArrayBuffer | null = null;
-    fileRef: any = null;
     contactForm = this.fb.group({
         avatar: [null],
         name: ['', Validators.required],
@@ -32,7 +32,22 @@ export class ContactCreateComponent implements OnInit {
         company: [null],
     });
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.errorsSub$ = this.contactsService.loading$.subscribe(isLoading => (this.loading = isLoading));
+
+        this.errorsSub$ = this.contactsService.createErrors$
+            .pipe(
+                filter(error => !!error),
+            )
+            .subscribe(errors => {
+                this.serverErrorHandler(errors);
+            });
+    }
+
+    ngOnDestroy() {
+        this.errorsSub$.unsubscribe();
+        this.errorsSub$.unsubscribe();
+    }
 
     customEmailValidator(control: AbstractControl): ValidationErrors {
         if (!control.value) {
@@ -43,80 +58,18 @@ export class ContactCreateComponent implements OnInit {
     }
 
     onSubmit() {
-        this.sendingData = true;
-        if (this.contactForm.get('avatar').value) {
-            this.uploadAvatarToFirebase();
-        } else {
-            this.sendToServer();
-        }
+        this.contactCreateService.createContact(this.contactForm.value);
     }
 
-    uploadAvatarToFirebase() {
-        const file = this.contactForm.get('avatar').value;
-        const phone = this.contactForm.get('phone').value;
-        const name = this.contactForm.get('name').value;
-        const filePath = `/avatars/${name}_${phone}`;
-        this.fileRef = this.fireStorage.ref(filePath);
-        this.fileRef
-            .put(file)
-            .then(snapshot => {
-                return snapshot.ref.getDownloadURL();
-            })
-            .then(url => {
-                this.sendToServer(url);
+    serverErrorHandler(serverError: RegisterErrorResponse[]) {
+        serverError.forEach(error => {
+            this.contactForm.controls[error.param].setErrors({
+                serverValidation: {
+                    value: true,
+                    message: error.msg,
+                },
             });
-    }
-
-    sendToServer(avatarUrl?: string) {
-        const contactData = Object.assign({}, this.contactForm.value);
-        if (!contactData.email) {
-            delete contactData.email;
-        }
-        if (!contactData.company) {
-            delete contactData.company;
-        }
-        if (avatarUrl) {
-            contactData.avatar = avatarUrl;
-        } else {
-            delete contactData.avatar;
-        }
-
-        this.contactCreateService.create(contactData).subscribe(
-            (result: ContactItem) => {
-                console.log(result);
-                this.sendingData = false;
-                this.contactService.addContact(result);
-                this.router.navigate(['/contacts']);
-            },
-            error => {
-                this.sendingData = false;
-                this.serverErrorHandler(error);
-            },
-        );
-    }
-
-    serverErrorHandler(serverError) {
-        console.log(serverError);
-        if (serverError.error) {
-            serverError.error.forEach(error => {
-                this.contactForm.controls[error.param].setErrors({
-                    serverValidation: {
-                        value: true,
-                        message: error.msg,
-                    },
-                });
-            });
-        }
-        if (this.fileRef) {
-            this.fileRef.delete().then(() => {
-                console.log('File deleted successfully');
-                this.fileRef = null;
-            });
-        }
-    }
-
-    onShowData() {
-        console.log(this.contactForm);
+        });
     }
 
     onFileChange(event) {

@@ -1,28 +1,32 @@
-import {Component, OnInit} from '@angular/core';
-import {ContactsService} from '../../../core/services';
-import {ContactItem} from 'src/app/core/models';
+import {Component, OnInit, OnDestroy} from '@angular/core';
+import {ContactsService} from '../contacts.service';
+import {ContactItem, RegisterErrorResponse} from 'src/app/core/models';
 import {FormBuilder, Validators, AbstractControl, ValidationErrors} from '@angular/forms';
-import {AngularFireStorage} from '@angular/fire/storage';
-import {Router} from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { ContactEditService } from './contact-edit.service';
 
 @Component({
     selector: 'app-contact-edit',
     templateUrl: './contact-edit.component.html',
     styleUrls: ['./contact-edit.component.scss'],
+    providers: [ContactEditService]
 })
-export class ContactEditComponent implements OnInit {
+export class ContactEditComponent implements OnInit, OnDestroy {
     constructor(
         private fb: FormBuilder,
-        private fireStorage: AngularFireStorage,
-        private router: Router,
         private contactsService: ContactsService,
+        private contactEditService: ContactEditService,
     ) {}
 
     contact: ContactItem;
-    updatingData = false;
+    loading: boolean;
+    contactSub$: Subscription;
+    loadingSub$: Subscription;
+    errorsSub$: Subscription;
+
     avatarImage: string | ArrayBuffer | null = null;
     imageFile: any = null;
-    fileRef: any = null;
     contactForm = this.fb.group({
         avatar: [null],
         name: [null, Validators.required],
@@ -40,7 +44,33 @@ export class ContactEditComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.contact = this.contactsService.selectedContact;
+        this.loadingSub$ = this.contactsService.loading$
+            .subscribe((isLoading: boolean) => this.loading = isLoading);
+        this.contactSub$ = this.contactsService.selectedContact$.pipe(filter((item: ContactItem) => !!item))
+            .subscribe(
+                (contact: ContactItem) => {
+                    this.contact = contact;
+                    this.formSeed();
+                }
+            );
+        this.errorsSub$ = this.contactsService.updateErrors$
+            .pipe(
+                filter(error => !!error),
+            )
+            .subscribe(
+                errors => {
+                    this.serverErrorHandler(errors);
+                }
+            );
+    }
+
+    ngOnDestroy() {
+        this.contactSub$.unsubscribe();
+        this.errorsSub$.unsubscribe();
+        this.loadingSub$.unsubscribe();
+    }
+
+    formSeed() {
         this.contactForm.patchValue({
             avatar: this.contact.avatar,
             name: this.contact.name,
@@ -52,72 +82,22 @@ export class ContactEditComponent implements OnInit {
     }
 
     onSubmit() {
-        this.updatingData = true;
         if (this.imageFile) {
-            this.uploadAvatarToFirebase();
+            this.contactEditService.updateContact({image: this.imageFile, contact: this.contactForm.value});
         } else {
-            this.sendToServer();
+            this.contactEditService.updateContact({contact: this.contactForm.value});
         }
     }
 
-    uploadAvatarToFirebase() {
-        const file = this.imageFile;
-        const phone = this.contactForm.get('phone').value;
-        const name = this.contactForm.get('name').value;
-        const filePath = `/avatars/${name}_${phone}`;
-        this.fileRef = this.fireStorage.ref(filePath);
-        this.fileRef
-            .put(file)
-            .then(snapshot => {
-                return snapshot.ref.getDownloadURL();
-            })
-            .then(url => {
-                this.sendToServer(url);
+    serverErrorHandler(serverError: RegisterErrorResponse[]) {
+        serverError.forEach(error => {
+            this.contactForm.controls[error.param].setErrors({
+                serverValidation: {
+                    value: true,
+                    message: error.msg,
+                },
             });
-    }
-
-    onShowData() {
-        console.log(this.contactForm);
-    }
-
-    sendToServer(avatarUrl?: string) {
-        const contactData = Object.assign({}, this.contactForm.value);
-        if (!contactData.email) {
-            delete contactData.email;
-        }
-        if (!contactData.company) {
-            delete contactData.company;
-        }
-        if (avatarUrl) {
-            contactData.avatar = avatarUrl;
-        }
-
-        this.contactsService.updataContactOnServer(contactData).subscribe(
-            (result: ContactItem) => {
-                console.log(result);
-                this.updatingData = false;
-                this.contactsService.updateContact(result);
-                this.router.navigate(['/contacts', this.contact._id]);
-            },
-            error => {
-                this.updatingData = false;
-                this.serverErrorHandler(error);
-            },
-        );
-    }
-
-    serverErrorHandler(serverError) {
-        console.log(serverError);
-        if (serverError.error) {
-            serverError.error.forEach(error => {
-                this.contactForm.controls[error.param].setErrors({
-                    serverValidation: {
-                        value: true,
-                        message: error.msg,
-                    },
-                });
-            });
-        }
+        });
     }
 
     onFileChange(event) {

@@ -16,7 +16,7 @@
                         <div class="form-group">
                             <label class="d-block"
                                 >Email<sup class="text-danger h6"> *</sup>
-                                <input type="email" class="form-control mt-2" formControlName="email" [readOnly]="fetchingUser" />
+                                <input type="email" class="form-control mt-2" formControlName="email" [readOnly]="sending$ | async" />
                                 <small *ngIf="isInputValid('email')" class="text-danger">
                                     {{getValidationErrorMessage('email')}}
                                 </small>
@@ -25,22 +25,22 @@
                         <div class="form-group">
                             <label class="d-block"
                                 >Password<sup class="text-danger h6"> *</sup>
-                                <input type="password" class="form-control mt-2" formControlName="password" [readOnly]="fetchingUser"/>
+                                <input type="password" class="form-control mt-2" formControlName="password" [readOnly]="sending$ | async"/>
                                 <small *ngIf="isInputValid('password')" class="text-danger">
                                     {{getValidationErrorMessage('password')}}
                                 </small>
                             </label>
                         </div>
-                        <div *ngIf="fetchingUser" class="d-flex align-items-center justify-content-center">
+                        <div *ngIf="sending$ | async" class="d-flex align-items-center justify-content-center">
                             <div class="spinner-border text-primary mx-auto" role="status" >
                                 <span class="sr-only">Loading...</span>
                             </div>
                         </div>
-                        <button *ngIf="!fetchingUser" type="submit" class="btn btn-primary px-5 d-block mx-auto" [disabled]="!loginForm.valid">
+                        <button *ngIf="!(sending$ | async)" type="submit" class="btn btn-primary px-5 d-block mx-auto" [disabled]="!loginForm.valid">
                             Login
                         </button>
                         <p class="c-max-content text-primary text-center mt-2 mb-0 mx-auto">
-                            <a routerLink="/register">
+                            <a routerLink="/auth/register">
                                 Have no account? Register
                             </a>
                         </p>

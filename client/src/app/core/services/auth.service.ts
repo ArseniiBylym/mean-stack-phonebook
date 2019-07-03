@@ -1,63 +1,83 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Router} from '@angular/router';
+import {BehaviorSubject, Subject} from 'rxjs';
 
 import {User, LoginData, RegisterData} from '../models';
+import {ApiService} from './api.service';
+import {JwtService} from './jwt.service';
 import {environment} from 'src/environments/environment';
+import { filter } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
 })
 export class AuthService {
-    constructor(private http: HttpClient, private router: Router) {}
+    constructor(
+        private http: HttpClient,
+        private router: Router,
+        private apiService: ApiService,
+        private jwtService: JwtService,
+    ) {}
 
-    isLogedIn = false;
-    fetchingUser = true;
-    user: null | User = null;
+    user: User;
+    user$ = new BehaviorSubject<User>(null);
+    auth$ = new BehaviorSubject<boolean>(false);
+    isAuthFetched$ = new BehaviorSubject<boolean>(false);
 
-    setOptions() {
-        return {
-            headers: new HttpHeaders({
-                Authorization: `Bearer ${localStorage.getItem(`token`)}`,
-                'Content-Type': 'application/json',
-            }),
-        };
+    setUser(user: User | null) {
+        this.user = user;
+        console.log('in service', user)
+        this.user$.next(user);
+    }
+
+    authSuccess(user: User) {
+        this.setUser(user);
+        this.auth$.next(true);
+        this.isAuthFetched$.next(true);
+    }
+
+    authFailed() {
+        this.setUser(null);
+        this.auth$.next(false);
+        this.isAuthFetched$.next(false);
+        this.jwtService.deleteToken();
+        this.router.navigate(['/auth/login']);
+    }
+
+    authUser() {
+        if (this.jwtService.getToken()) {
+            this.apiService.get('/auth').subscribe(
+                user => {
+                    console.log(user);
+                    return this.authSuccess(user);
+                },
+                error => this.authFailed(),
+            );
+        } else {
+            this.authFailed();
+        }
     }
 
     getUser() {
-        this.http.get(`${environment.BASE_URL}/auth`, this.setOptions()).subscribe(
-            (user: User) => {
-                console.log(user);
-                this.user = user;
-                this.isLogedIn = true;
-                this.fetchingUser = false;
-                this.router.navigate(['/contacts']);
-            },
-            error => {
-                console.log(error);
-                localStorage.removeItem('token');
-                this.fetchingUser = false;
-                this.router.navigate(['/login']);
-            },
-        );
-    }
-
-    login(data: LoginData) {
-        return this.http.post(`${environment.BASE_URL}/auth/login`, data, this.setOptions());
-    }
-
-    register(data: RegisterData) {
-        return this.http.post(`${environment.BASE_URL}/auth/register`, data, this.setOptions());
+        return new Promise((resolve, reject) => {
+            if (this.user) {
+                console.log('User already auth');
+                resolve(this.user);
+            }
+            this.isAuthFetched$.pipe(filter((fetched: boolean) => fetched))
+                .subscribe(() => {
+                    return this.user
+                        ? resolve(this.user)
+                        : reject();
+                });
+        });
     }
 
     logout() {
-        localStorage.removeItem('token');
-        this.isLogedIn = false;
-        this.user = null;
-        this.router.navigate(['/login']);
-    }
-
-    isAuth(): boolean {
-        return this.isLogedIn;
+        this.jwtService.deleteToken();
+        this.setUser(null);
+        this.auth$.next(false);
+        this.router.navigate(['/auth/login']);
     }
 }

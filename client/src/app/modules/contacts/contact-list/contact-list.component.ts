@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs';
 
-import {ContactsService} from '../../../core/services';
+import {ContactsService} from '../contacts.service';
 import {ContactItem} from '../../../core/models';
 
 @Component({
@@ -10,9 +10,10 @@ import {ContactItem} from '../../../core/models';
     styleUrls: ['./contact-list.component.scss'],
 })
 export class ContactListComponent implements OnInit {
+    contactsSubscription: Subscription;
     contacts: ContactItem[];
+
     filteredContacts: ContactItem[];
-    contactsSub: Subscription;
     searchString = '';
 
     constructor(private contactsService: ContactsService) {}
@@ -35,13 +36,13 @@ export class ContactListComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.contactsService.selectedContact = null;
-        this.contacts = this.contactsService.contacts;
-        this.filteredContacts = this.contactsService.contacts;
-        this.contactsSub = this.contactsService.contactsUpdates.subscribe((contacts: ContactItem[]) => {
-            this.contacts = contacts;
-            this.filteredContacts = this.searchFilter(contacts);
-        });
-        this.contactsService.getContacts();
+        console.log('Inside contact list ')
+        this.contactsSubscription = this.contactsService.contacts$
+            .subscribe(
+                (contacts: ContactItem[]) => {
+                    
+                    this.contacts = this.filteredContacts = contacts;
+                }
+            );
     }
 }

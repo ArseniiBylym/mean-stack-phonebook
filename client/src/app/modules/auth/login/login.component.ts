@@ -3,51 +3,44 @@ import {AuthService} from '../../../core/services/auth.service';
 import {FormBuilder, Validators} from '@angular/forms';
 import {User, LoginErrorResponse} from '../../../core/models';
 import { Router } from '@angular/router';
+import { LoginService } from './login.service';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
+    providers: [LoginService]
 })
 export class LoginComponent implements OnInit {
 
     constructor(
-        private authService: AuthService,
         private fb: FormBuilder,
-        private router: Router,
+        private loginService: LoginService,
     ) {}
 
-    fetchingUser = false;
+    sending$: Observable<boolean>;
+    errors$: Observable<LoginErrorResponse>;
     loginForm = this.fb.group({
         email: ['', [Validators.required, Validators.email]],
         password: ['', Validators.required],
     });
 
-    ngOnInit() {}
-    onSubmit() {
-        this.fetchingUser = true;
-        this.authService.login(this.loginForm.value)
-            .subscribe(
-                (result: {token: string, user: User}) => {
-                    console.log(result);
-                    this.authService.user = result.user;
-                    this.authService.isLogedIn = true;
-                    this.fetchingUser = false;
-                    localStorage.setItem('token', result.token);
-                    this.router.navigate(['/contacts'])
-                },
-                error => {
-                    console.log(error);
-                    this.fetchingUser = false;
-                    if (error.error.validation) {
-                        this.setError(error.error);
-                    }
-                    console.log('Ups, something went wrong', error);
-                },
+    ngOnInit() {
+        this.sending$ = this.loginService.sending$.asObservable();
+        this.errors$ = this.loginService.errors$.asObservable();
+        this.errors$.subscribe(
+                (errors: LoginErrorResponse) => {
+                    console.log(errors);
+                    this.setErrors(errors);
+                }
             );
     }
+    onSubmit() {
+        this.loginService.login(this.loginForm.value);
+    }
 
-    setError(error: LoginErrorResponse) {
+    setErrors(error: LoginErrorResponse) {
         this.loginForm.controls[error.fieldName].setErrors({serverValidation: {
             value: true,
             message: error.errorMessage

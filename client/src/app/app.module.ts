@@ -6,8 +6,10 @@ import {HttpClientModule} from '@angular/common/http';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import { CoreModule } from './core/core.module';
-import { AuthModule } from './modules/auth/auth.module';
-import { ContactsModule } from './modules/contacts/contacts.module';
+// import { AuthModule } from './modules/auth/auth.module';
+import { SharedModule } from './shared/shared.module';
+// import { ContactsModule } from './modules/contacts/contacts.module';
+import { httpInterceptorProviders } from './core/interceptors';
 
 @NgModule({
     declarations: [
@@ -18,11 +20,12 @@ import { ContactsModule } from './modules/contacts/contacts.module';
         HttpClientModule,
         ReactiveFormsModule,
         CoreModule,
-        AuthModule,
-        ContactsModule,
+        SharedModule,
+        // AuthModule,
+        // ContactsModule,
         AppRoutingModule,
     ],
-    providers: [],
+    providers: [httpInterceptorProviders],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

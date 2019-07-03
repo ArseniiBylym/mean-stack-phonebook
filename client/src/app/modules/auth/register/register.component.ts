@@ -4,16 +4,25 @@ import {Router} from '@angular/router';
 
 import {AuthService} from '../../../core/services';
 import {User, RegisterErrorResponse} from '../../../core/models';
+import { RegisterService } from './register.service';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-register',
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.scss'],
+    providers: [RegisterService],
 })
 export class RegisterComponent implements OnInit {
-    constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {}
+    constructor(
+        private fb: FormBuilder,
+        private authService: AuthService,
+        private router: Router,
+        private registerService: RegisterService
+    ) {}
 
-    fetchingUser = false;
+    sending$: Observable<boolean>;
+    errors$: Observable<RegisterErrorResponse[]>;
     registerForm = this.fb.group(
         {
             name: ['', Validators.required],
@@ -24,7 +33,16 @@ export class RegisterComponent implements OnInit {
         {validators: this.passwordConfirmed},
     );
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.sending$ = this.registerService.sending$.asObservable();
+        this.errors$ = this.registerService.errors$.asObservable();
+        this.errors$.subscribe(
+                (errors: RegisterErrorResponse[]) => {
+                    console.log(errors);
+                    this.setErrors(errors);
+                }
+            );
+    }
 
     passwordConfirmed(control: FormGroup): ValidationErrors | null {
         const password = control.get('password');
@@ -38,26 +56,27 @@ export class RegisterComponent implements OnInit {
     }
 
     onSubmit() {
-        this.fetchingUser = true;
-        this.authService.register(this.registerForm.value).subscribe(
-            (response: {token: string; user: User}) => {
-                this.authService.user = response.user;
-                this.authService.isLogedIn = true;
-                this.fetchingUser = false;
-                localStorage.setItem('token', response.token);
-                this.router.navigate(['/contacts']);
-            },
-            error => {
-                this.fetchingUser = false;
-                if (error.error) {
-                    this.setError(error.error);
-                }
-                console.log(error);
-            },
-        );
+        this.registerService.register(this.registerForm.value);
+        // this.fetchingUser = true;
+        // this.authService.register(this.registerForm.value).subscribe(
+        //     (response: {token: string; user: User}) => {
+        //         this.authService.user = response.user;
+        //         this.authService.isLogedIn = true;
+        //         this.fetchingUser = false;
+        //         localStorage.setItem('token', response.token);
+        //         this.router.navigate(['/contacts']);
+        //     },
+        //     error => {
+        //         this.fetchingUser = false;
+        //         if (error.error) {
+        //             this.setError(error.error);
+        //         }
+        //         console.log(error);
+        //     },
+        // );
     }
 
-    setError(errors: [RegisterErrorResponse]) {
+    setErrors(errors: RegisterErrorResponse[]) {
         errors.forEach(error => {
             this.registerForm.controls[error.param].setErrors({
                 serverValidation: {

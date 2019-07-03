@@ -1,29 +1,7 @@
 <div class="c-wrapper">
     <div class="c-header row m-0">
         <div class="col-12 p-0">
-            <nav class="navbar navbar-light bg-primary">
-                <a class="navbar-brand" routerLink="/contacts">
-                    <div class="d-inline text-danger align-center bg-white rounded-circle mr-2">
-                        <img
-                            src="../../../assets/icons/phone.svg"
-                            width="30"
-                            height="30"
-                            class="d-inline-block align-top"
-                            alt=""
-                        />
-                    </div>
-                    <p class="text-white d-inline">Phonebook</p>
-                </a>
-                <img
-                    src="../../../assets/icons/user-circle-solid.svg"
-                    width="20"
-                    height="20"
-                    class="d-inline align-top mr-2 ml-auto"
-                    alt=""
-                />
-                <p class="text-white align-center mb-0 mr-2">{{ authService.user.name }}</p>
-                <button class="btn btn-primary" (click)="onLogout()">Logout</button>
-            </nav>
+            <app-header></app-header>
         </div>
     </div>
     <div class="c-content position-relative">

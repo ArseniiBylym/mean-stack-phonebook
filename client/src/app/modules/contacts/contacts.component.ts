@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services';
+import { ContactsService } from './contacts.service';
 
 @Component({
     selector: 'app-contacts',
@@ -9,13 +10,15 @@ import { AuthService } from '../../core/services';
 })
 export class ContactsComponent implements OnInit {
     constructor(
-        private router: Router,
         private authService: AuthService,
+        private contactsService: ContactsService
     ) {}
 
     onLogout() {
         this.authService.logout();
     }
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.contactsService.get();
+    }
 }

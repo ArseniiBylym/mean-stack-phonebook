@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ContactsService} from '../../../core/services';
+import {ContactsService} from '../contacts.service';
 import {ContactItem} from 'src/app/core/models';
 import {ActivatedRoute, Router, Params} from '@angular/router';
 
@@ -15,20 +15,22 @@ export class ContactDetailsComponent implements OnInit {
     constructor(private contactsServise: ContactsService, private route: ActivatedRoute, private router: Router) {}
 
     ngOnInit() {
+        console.log('IIinside detail componen')
+        this.contactsServise.selectedContact$
+            .subscribe(
+                contact => {
+                    this.contact = contact;
+                }
+            )
+        this.contactsServise.loading$
+            .subscribe(
+                loading => {
+                    this.fetching = loading;
+                }
+            )
         this.route.params.subscribe((params: Params) => {
             console.log(params);
-            this.contactsServise.getContactDetails(params.id).subscribe(
-                (data: ContactItem) => {
-                    console.log(data);
-                    this.contact = data;
-                    this.fetching = false;
-                    this.contactsServise.selectedContact = data;
-                },
-                error => {
-                    console.log(error);
-                    this.fetching = false;
-                },
-            );
+            this.contactsServise.getDetails(params.id);
         });
     }
 

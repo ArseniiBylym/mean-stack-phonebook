@@ -1,3 +1,1 @@
-export * from './auth.guard';
-export * from './home.guard';
-export * from './login-register.guard';
+export * from './no-auth.guard';

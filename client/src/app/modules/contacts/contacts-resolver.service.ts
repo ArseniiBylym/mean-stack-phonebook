@@ -4,7 +4,9 @@ import { AuthService } from 'src/app/core/services';
 import { Observable, EMPTY, of } from 'rxjs';
 import { User } from 'src/app/core/models';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class ContactsResolverService implements Resolve<any> {
     constructor(
         private router: Router,
@@ -18,11 +20,11 @@ export class ContactsResolverService implements Resolve<any> {
         return this.authService
             .getUser()
             .then((user: User) => {
-                console.log('User fetched', user)
+                console.log('User fetched');
                 return of(user);
             })
             .catch(() => {
-                console.log('User fetching failed')
+                console.log('User fetching failed');
                 this.router.navigate(['/auth/login']);
                 return EMPTY;
             });

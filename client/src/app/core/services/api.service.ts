@@ -19,7 +19,6 @@ export class ApiService {
         } else {
             return throwError(error);
         }
-
     }
 
     get(path: string, params: HttpParams = new HttpParams()): Observable<any> {
@@ -34,16 +33,16 @@ export class ApiService {
         ).pipe(catchError(this.formatErrors));
       }
 
-      post(path: string, body: object = {}): Observable<any> {
-        return this.http.post(
-          `${environment.BASE_URL}${path}`,
-          JSON.stringify(body)
-        ).pipe(catchError(this.formatErrors));
-      }
+    post(path: string, body: object = {}): Observable<any> {
+      return this.http.post(
+        `${environment.BASE_URL}${path}`,
+        JSON.stringify(body)
+      ).pipe(catchError(this.formatErrors));
+    }
 
-      delete(path: string): Observable<any> {
-        return this.http.delete(
-          `${environment.BASE_URL}${path}`
-        ).pipe(catchError(this.formatErrors));
-      }
+    delete(path: string): Observable<any> {
+      return this.http.delete(
+        `${environment.BASE_URL}${path}`
+      ).pipe(catchError(this.formatErrors));
+    }
 }

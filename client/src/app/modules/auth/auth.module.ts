@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { AuthRoutingModule } from './auth-routing.module';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
+import { NoAuthGuard } from './no-auth.guard';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { RegisterComponent } from './register/register.component';
     ReactiveFormsModule,
     RouterModule,
     AuthRoutingModule
-  ]
+  ],
+  providers: [NoAuthGuard]
 })
 export class AuthModule { }

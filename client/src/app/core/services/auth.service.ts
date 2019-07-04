@@ -1,12 +1,10 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Router} from '@angular/router';
-import {BehaviorSubject, Subject} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 
-import {User, LoginData, RegisterData} from '../models';
+import {User} from '../models';
 import {ApiService} from './api.service';
 import {JwtService} from './jwt.service';
-import {environment} from 'src/environments/environment';
 import { filter } from 'rxjs/operators';
 
 @Injectable({
@@ -14,20 +12,16 @@ import { filter } from 'rxjs/operators';
 })
 export class AuthService {
     constructor(
-        private http: HttpClient,
         private router: Router,
         private apiService: ApiService,
         private jwtService: JwtService,
     ) {}
 
-    user: User;
     user$ = new BehaviorSubject<User>(null);
     auth$ = new BehaviorSubject<boolean>(false);
     isAuthFetched$ = new BehaviorSubject<boolean>(false);
 
     setUser(user: User | null) {
-        this.user = user;
-        console.log('in service', user)
         this.user$.next(user);
     }
 
@@ -49,7 +43,6 @@ export class AuthService {
         if (this.jwtService.getToken()) {
             this.apiService.get('/auth').subscribe(
                 user => {
-                    console.log(user);
                     return this.authSuccess(user);
                 },
                 error => this.authFailed(),
@@ -61,14 +54,14 @@ export class AuthService {
 
     getUser() {
         return new Promise((resolve, reject) => {
-            if (this.user) {
+            if (this.user$.value) {
                 console.log('User already auth');
-                resolve(this.user);
+                resolve(this.user$.value);
             }
             this.isAuthFetched$.pipe(filter((fetched: boolean) => fetched))
                 .subscribe(() => {
-                    return this.user
-                        ? resolve(this.user)
+                    return this.user$.value
+                        ? resolve(this.user$.value)
                         : reject();
                 });
         });

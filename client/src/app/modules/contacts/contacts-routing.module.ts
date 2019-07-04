@@ -6,15 +6,11 @@ import {ContactListComponent} from './contact-list/contact-list.component';
 import {ContactDetailsComponent} from './contact-details/contact-details.component';
 import {ContactCreateComponent} from './contact-create/contact-create.component';
 import {ContactEditComponent} from './contact-edit/contact-edit.component';
-import { ContactsResolverService } from './contacts-resolver.service';
 
 const contactsRoutes: Routes = [
     {
         path: '',
         component: ContactsComponent,
-        // resolve: {
-        //     user: ContactsResolverService,
-        // },
         children: [
             {path: '', component: ContactListComponent},
             {path: 'new', component: ContactCreateComponent},

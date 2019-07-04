@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {AuthService} from '../../../core/services/auth.service';
 import {FormBuilder, Validators} from '@angular/forms';
-import {User, LoginErrorResponse} from '../../../core/models';
-import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
+
+import { LoginErrorResponse} from '../../../core/models';
 import { LoginService } from './login.service';
-import { BehaviorSubject, Observable } from 'rxjs';
 
 @Component({
     selector: 'app-login',
@@ -29,9 +29,8 @@ export class LoginComponent implements OnInit {
     ngOnInit() {
         this.sending$ = this.loginService.sending$.asObservable();
         this.errors$ = this.loginService.errors$.asObservable();
-        this.errors$.subscribe(
+        this.errors$.pipe(filter(error => !!error)).subscribe(
                 (errors: LoginErrorResponse) => {
-                    console.log(errors);
                     this.setErrors(errors);
                 }
             );
@@ -45,6 +44,7 @@ export class LoginComponent implements OnInit {
             value: true,
             message: error.errorMessage
         }});
+        this.loginForm.controls[error.fieldName].markAsTouched();
     }
 
     getValidationErrorMessage(fieldName: string) {

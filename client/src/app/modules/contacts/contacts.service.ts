@@ -3,14 +3,12 @@ import {BehaviorSubject} from 'rxjs';
 
 import {ContactItem, CreateContactData} from '../../core/models';
 import {ApiService} from '../../core/services/api.service';
-import { AngularFireStorage } from '@angular/fire/storage';
 import { Router } from '@angular/router';
 
 @Injectable()
 export class ContactsService {
     constructor(
         private apiService: ApiService,
-        private fireStorage: AngularFireStorage,
         private router: Router,
     ) {}
 
@@ -26,13 +24,11 @@ export class ContactsService {
         this.loading$.next(true);
         this.apiService.get('/contacts').subscribe(
             (contacts: ContactItem[]) => {
-                console.log(contacts);
                 this.loading$.next(false);
                 this.contacts = contacts;
                 this.contacts$.next(this.contacts);
             },
             error => {
-                console.log(error);
                 this.loading$.next(false);
             },
         );
@@ -47,7 +43,6 @@ export class ContactsService {
                 this.router.navigate(['/contacts']);
             },
             error => {
-                console.log(error);
                 this.loading$.next(false);
                 this.createErrors$.next(error);
             },
@@ -70,7 +65,6 @@ export class ContactsService {
                 this.router.navigate(['/contacts', this.selectedContact._id]);
             },
             error => {
-                console.log(error);
                 this.loading$.next(false);
                 this.updateErrors$.next(error);
             },
@@ -86,7 +80,6 @@ export class ContactsService {
                 this.selectedContact$.next(contact);
             },
             error => {
-                console.log(error);
                 this.loading$.next(false);
             },
         );

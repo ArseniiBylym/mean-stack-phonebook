@@ -6,9 +6,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import { CoreModule } from './core/core.module';
-// import { AuthModule } from './modules/auth/auth.module';
 import { SharedModule } from './shared/shared.module';
-// import { ContactsModule } from './modules/contacts/contacts.module';
 import { httpInterceptorProviders } from './core/interceptors';
 
 @NgModule({
@@ -21,8 +19,6 @@ import { httpInterceptorProviders } from './core/interceptors';
         ReactiveFormsModule,
         CoreModule,
         SharedModule,
-        // AuthModule,
-        // ContactsModule,
         AppRoutingModule,
     ],
     providers: [httpInterceptorProviders],

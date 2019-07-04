@@ -10,18 +10,16 @@ export class TokenInterceptorService implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         const token = this.jwtService.getToken();
 
-        const headers = new HttpHeaders({
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-        });
-
-
-        // if (token) {
-        //     headers.set('Authorization', `Bearer ${token}`);
-        // }
+        const headers = token
+            ? new HttpHeaders({
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            })
+            : new HttpHeaders({
+                'Content-Type': 'application/json',
+            });
 
         const request = req.clone({headers});
-        console.log(request.headers)
         return next.handle(request);
     }
 }

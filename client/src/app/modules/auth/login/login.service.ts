@@ -15,8 +15,8 @@ export class LoginService {
         private jwtService: JwtService,
     ) {}
 
-    sending$ = new Subject<boolean>();
-    errors$ = new Subject<LoginErrorResponse>();
+    sending$ = new BehaviorSubject<boolean>(false);
+    errors$ = new BehaviorSubject<LoginErrorResponse>(null);
 
     loginSuccess(data: {token: string, user: User}) {
         this.sending$.next(false);

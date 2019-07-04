@@ -1,11 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, Validators, FormGroup, ValidationErrors} from '@angular/forms';
-import {Router} from '@angular/router';
-
-import {AuthService} from '../../../core/services';
-import {User, RegisterErrorResponse} from '../../../core/models';
-import { RegisterService } from './register.service';
 import { Observable } from 'rxjs';
+
+import { RegisterErrorResponse} from '../../../core/models';
+import { RegisterService } from './register.service';
 
 @Component({
     selector: 'app-register',
@@ -16,8 +14,6 @@ import { Observable } from 'rxjs';
 export class RegisterComponent implements OnInit {
     constructor(
         private fb: FormBuilder,
-        private authService: AuthService,
-        private router: Router,
         private registerService: RegisterService
     ) {}
 
@@ -57,23 +53,6 @@ export class RegisterComponent implements OnInit {
 
     onSubmit() {
         this.registerService.register(this.registerForm.value);
-        // this.fetchingUser = true;
-        // this.authService.register(this.registerForm.value).subscribe(
-        //     (response: {token: string; user: User}) => {
-        //         this.authService.user = response.user;
-        //         this.authService.isLogedIn = true;
-        //         this.fetchingUser = false;
-        //         localStorage.setItem('token', response.token);
-        //         this.router.navigate(['/contacts']);
-        //     },
-        //     error => {
-        //         this.fetchingUser = false;
-        //         if (error.error) {
-        //             this.setError(error.error);
-        //         }
-        //         console.log(error);
-        //     },
-        // );
     }
 
     setErrors(errors: RegisterErrorResponse[]) {

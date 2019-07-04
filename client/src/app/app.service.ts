@@ -1,16 +1,12 @@
 import {Injectable} from '@angular/core';
-import {AuthService} from './core/services';
-import {Router, RouterEvent, NavigationStart, NavigationEnd, NavigationCancel, NavigationError} from '@angular/router';
+import {RouterEvent, NavigationStart, NavigationEnd, NavigationCancel, NavigationError} from '@angular/router';
 import {Subject} from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class AppService {
-    constructor(
-        private authService: AuthService,
-        private router: Router
-    ) {}
+    constructor() {}
 
     loading$ = new Subject<boolean>();
 

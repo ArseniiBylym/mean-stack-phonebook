@@ -12,7 +12,6 @@ import {ContactCreateComponent} from './contact-create/contact-create.component'
 import {ContactEditComponent} from './contact-edit/contact-edit.component';
 import {ContactsRoutingModule} from './contacts-routing.module';
 import {environment} from 'src/environments/environment';
-import { ContactsResolverService } from './contacts-resolver.service';
 import { ContactsService } from './contacts.service';
 import { SharedModule } from 'src/app/shared/shared.module';
 
@@ -37,7 +36,6 @@ import { SharedModule } from 'src/app/shared/shared.module';
     providers: [
         {provide: StorageBucket, useValue: environment.storageBucket},
         ContactsService,
-        ContactsResolverService,
     ],
 })
 export class ContactsModule {}

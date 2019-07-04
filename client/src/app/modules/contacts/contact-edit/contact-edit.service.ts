@@ -1,8 +1,6 @@
 import {Injectable} from '@angular/core';
 import { ContactsService } from '../contacts.service';
-import { ContactItem, CreateContactData } from 'src/app/core/models';
-import { Subject } from 'rxjs';
-import { ApiService } from 'src/app/core/services/api.service';
+import { CreateContactData } from 'src/app/core/models';
 import { AngularFireStorage } from '@angular/fire/storage';
 
 @Injectable()

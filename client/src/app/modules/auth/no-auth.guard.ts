@@ -1,23 +1,29 @@
 import {Injectable} from '@angular/core';
-import {CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, CanActivateChild} from '@angular/router';
+import {CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, CanActivateChild, Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import { AuthService } from 'src/app/core/services';
-import { take, map } from 'rxjs/operators';
+import { take, map, tap } from 'rxjs/operators';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable()
 export class NoAuthGuard implements CanActivate, CanActivateChild {
-    constructor(private authService: AuthService) {}
+    constructor(
+        private authService: AuthService,
+        private router: Router,
+    ) {}
     canActivate(
         next: ActivatedRouteSnapshot,
         state: RouterStateSnapshot,
     ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
         return this.authService.auth$.pipe(
             take(1),
-            map(isAuth => !isAuth),
-        );
+            tap(isAuth => {
+                if (isAuth) {
+                    this.router.navigate(['/contacts']);
+                }
+            }),
+            map(auth => !auth));
     }
+
     canActivateChild(
         next: ActivatedRouteSnapshot,
         state: RouterStateSnapshot,

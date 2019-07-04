@@ -1,0 +1,19 @@
+.c-avatarImage{
+    object-fit: contain;
+    border-radius: 50%;
+}
+.c-form{
+    max-width: 600px;
+    margin: 0 auto;
+}
+input.ng-invalid.ng-touched{
+    border-color: red;
+    &:focus{
+        box-shadow: 0 0 0 .2rem #ff000026;
+    }
+}
+.c-edit-button{
+    position: absolute;
+    top: 15px;
+    left: 20px;
+}

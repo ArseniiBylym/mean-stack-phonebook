@@ -1,3 +1,5 @@
 node_modules
 .env
-client/build
+.vscode
+client/src/environments/environment.ts
+client/src/environments/environment.prod.ts

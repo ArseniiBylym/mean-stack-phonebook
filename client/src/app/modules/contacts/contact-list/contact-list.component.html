@@ -1,0 +1,37 @@
+<div class="c-search-input px-3">
+    <div class="c-search-input-content form-group text-center">
+        <input type="text" class="form-control mt-2" placeholder="Search" [(ngModel)]="searchString" name="searchString" (input)="onSearchChange()" [disabled]="!contacts || !contacts.length"/>
+    </div>
+</div>
+<div class="c-wrapper p-3">
+    <h4 *ngIf="!contacts || contacts.length === 0" class="text-center mt-2" #emptyHeader>Contact list is empty now</h4>
+    <h4 *ngIf="searchString.length !== 0 && filteredContacts.length === 0" class="text-center mt-2" #emptyHeader>Contacts not found</h4>
+    <div *ngFor="let contact of filteredContacts" class="card mb-3 mx-auto bg-light" style="max-width: 600px;">
+        <a class="c-contact-card" [routerLink]="['/contacts', contact._id]">
+            <div class="row no-gutters">
+                <div class="col-4">
+                    <img
+                        [src]="contact.avatar"
+                        style="max-height: 150px; object-fit: contain"
+                        class="card-img"
+                        alt=""
+                    />
+                </div>
+                <div class="col-8">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ contact.name }}</h5>
+                        <p class="card-text">{{ contact.phone }}</p>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <a routerLink="/contacts/new">
+        <button
+            class="c-new-contact-button btn d-flex align-items-center justify-content-center p-2 rounded-circle bg-primary text-danger"
+        >
+            <img src="../../../../assets/icons/plus-solid.svg" class="text-danger" width="30" height="30" alt="" />
+        </button>
+    </a>
+</div>

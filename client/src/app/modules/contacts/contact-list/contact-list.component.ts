@@ -36,6 +36,7 @@ export class ContactListComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.contactsService.clearDetails();
         this.contactsSubscription = this.contactsService.contacts$
             .subscribe(
                 (contacts: ContactItem[]) => {

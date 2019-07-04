@@ -5,7 +5,7 @@ import {BehaviorSubject} from 'rxjs';
 import {User} from '../models';
 import {ApiService} from './api.service';
 import {JwtService} from './jwt.service';
-import { filter } from 'rxjs/operators';
+import { filter, tap } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
@@ -34,7 +34,7 @@ export class AuthService {
     authFailed() {
         this.setUser(null);
         this.auth$.next(false);
-        this.isAuthFetched$.next(false);
+        this.isAuthFetched$.next(true);
         this.jwtService.deleteToken();
         this.router.navigate(['/auth/login']);
     }
